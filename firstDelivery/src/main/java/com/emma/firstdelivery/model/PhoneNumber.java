@@ -1,0 +1,26 @@
+package com.emma.firstdelivery.model;
+
+public class PhoneNumber implements MessageActions {
+    private String phoneNumber;
+    public Message message;
+
+    public PhoneNumber(String phoneNumber, Message message) {
+        this.phoneNumber = phoneNumber;
+        this.message = message;
+    }
+
+    @Override
+    public String sendMessage(Message message) {
+        return message.getSender() + " envio mensaje a " + message.getReciber() + " desde telefono: " + this.phoneNumber + ". Mensaje: " + message.getMessage();
+    }
+
+    @Override
+    public String reciveMessage(Message message) {
+        return message.getReciber() + " recibio mensaje de " + message.getSender() + " desde telefono: " + this.phoneNumber + ". Mensaje: " + message.getMessage();
+    }
+
+    @Override
+    public String respondMessage(Message message) {
+        return message.getReciber() + " respondio a " + message.getSender() + " desde telefono: " + this.phoneNumber;
+    }
+}
