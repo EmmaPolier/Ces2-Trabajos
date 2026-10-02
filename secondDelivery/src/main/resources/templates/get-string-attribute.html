@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+>
+  <head>
+    <meta charset="UTF-8">
+    <title>Peticion 3 - Obtener un valor de tipo cadena</title>
+  </head>
+  <body>
+    <h1>Total de mensajes y nombre de Senders</h1>
+    <ul>
+      <p>Total de mensajes: <span th:text="${messagesCount}"></span></p>
+      <li th:each="sender: ${senders}" th:text="${sender}"></li>
+    </ul>
+  </body>
+</html>
