@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+>
+    <head>
+        <meta charset="UTF-8">
+        <title>Peticion 5 - Mensaje con mayor prioridad</title>
+    </head>
+    <body>
+        <h1>Mensaje de mayor prioridad</h1>
+        <div th:if="${maxPriority != null}">
+            <p>De: <span th:text="${maxPriority.sender}"></span></p>
+            <p>Para: <span th:text="${maxPriority.reciber}"></span></p>
+            <p>Mensaje: <span th:text="${maxPriority.message}"></span></p>
+            <p>Prioridad: <span th:text="${maxPriority.priority}"></span></p>
+        </div>
+    </body>
+</html>

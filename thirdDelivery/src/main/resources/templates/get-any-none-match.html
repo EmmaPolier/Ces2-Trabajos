@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+>
+    <head>
+        <meta charset="UTF-8">
+        <title>Peticion 4 - Obtener si any-none Matches</title>
+    </head>
+    <body>
+        <h1>Tiene @, Tiene alta prioridad y No tiene remitente</h1>
+        <ul th:text="${hasEmailSender}"></ul>
+        <ul th:text="${hasHighPriority}"></ul>
+        <ul th:text="${noMissingReceiver}"></ul>
+    </body>
+</html>
