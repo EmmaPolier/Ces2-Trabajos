@@ -1,102 +1,91 @@
 package org.example.thirddelivery.controller;
 
 import org.example.thirddelivery.model.*;
-import org.example.thirddelivery.repository.MessageRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import java.util.Comparator;
-import java.util.IntSummaryStatistics;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Controller
 public class MessageController {
 
-    private final MessageRepository repository;
+    // http://localhost:8080/execute
+    @GetMapping("/execute")
+    public String execute(Model model) {
+        Stack<Integer> stack1 = new Stack<>();
+        stack1.push(1);
+        stack1.push(10);
+        Stack<Integer> stack2 = new Stack<>();
+        stack2.push(2);
+        stack2.push(9);
+        Stack<Integer> stack3 = new Stack<>();
+        stack3.push(3);
+        stack3.push(8);
+        Stack<Integer> stack4 = new Stack<>();
+        stack4.push(4);
+        stack4.push(7);
+        Stack<Integer> stack5 = new Stack<>();
+        stack5.push(5);
+        stack5.push(6);
+        stack5.push(5);
 
-    public MessageController(MessageRepository repository) {
-        this.repository = repository;
-    }
+        Message m1 = new Message("Emma", "Joel", EnumMessage.CHAT, Category.GENERAL, stack1);
+        Message m2 = new Message("Raquel", "Stivens", EnumMessage.EMAIL, Category.URGENT, stack2);
+        Message m3 = new Message("Sara", "Emma", EnumMessage.SMS, Category.INFORMATIVE, stack3);
+        Message m4 = new Message("Miguel", "Laura", EnumMessage.NOTIFICATION, Category.URGENT, stack4);
+        Message m5 = new Message("Emma", "Sara", EnumMessage.ALERT, Category.GENERAL, stack5);
 
-    // http://localhost:8080/get-names
-    @GetMapping("/get-names")
-    public String getNames(Model model) {
-        List<MessageActions> objects = repository.findAll();
+        Stack<Message> stackMessages = new Stack<>();
+        stackMessages.push(m1);
+        stackMessages.push(m2);
+        stackMessages.push(m3);
+        stackMessages.push(m4);
+        stackMessages.push(m5);
 
-        String names = objects.stream()
-                .map(MessageActions::getNames)
-                .collect(Collectors.joining(", "));
+        TopicsHistory history = new TopicsHistory("My history", EnumMessage.ALERT, Category.URGENT);
+        history.addToDeque(m1);
+        history.addToDeque(m2);
+        history.addToDeque(m3);
+        history.addToDeque(m4);
+        history.addToDeque(m5);
 
-        model.addAttribute("names", names);
-        return "get-names";
-    }
+        List<String> resultsListIt = new ArrayList<>();
+        ListIterator<Message> listIterator = stackMessages.listIterator();
+        while (listIterator.hasNext()) {
+            Message m = listIterator.next();
+            resultsListIt.add(m.toString());
+        }
 
-    // http://localhost:8080/get-statistics
-    @GetMapping("/get-statistics")
-    public String getStatistics(Model model) {
-        IntSummaryStatistics stats = allMessages().stream()
-                .mapToInt(Message::getPriority)
-                .summaryStatistics();
+        List<String> resultsIt = new ArrayList<>();
+        Iterator<Message> iterator = history.getMessages().iterator();
+        while (iterator.hasNext()) {
+            Message m = iterator.next();
+            resultsIt.add(m.toString());
+        }
 
-        model.addAttribute("conteo", stats.getCount());
-        model.addAttribute("suma", stats.getSum());
-        model.addAttribute("promedio", stats.getAverage());
-        model.addAttribute("minimo", stats.getMin());
-        model.addAttribute("maximo", stats.getMax());
-        return "get-statistics";
-    }
-
-    // http://localhost:8080/get-string-attribute
-    @GetMapping("/get-string-attribute")
-    public String getStringAttribute(Model model) {
-        List<Message> messages = allMessages();
-
-        List<String> senders = messages.stream()
-                .map(Message::getSender)
+        Deque<Message> dequeConverted = new ArrayDeque<>(stackMessages);
+        List<Message> functionalFilter = dequeConverted.stream()
+                .filter(m -> m.getMessage() == EnumMessage.EMAIL)
                 .collect(Collectors.toList());
 
-        model.addAttribute("messagesCount", messages.size());
-        model.addAttribute("senders", senders);
-        return "get-string-attribute";
-    }
+        Function<Message, Integer> sumCount = msg -> {
+            int sum = 0;
+            for (Integer num : msg.getCount()) {
+                sum += num;
+            }
+            return sum;
+        };
 
-    // http://localhost:8080/get-any-none-match
-    @GetMapping("/get-any-none-match")
-    public String getAnyNoneMatch(Model model) {
-        List<Message> messages = allMessages();
+        int totalObjs1 = m1.seeTotals(sumCount);
 
-        boolean hasEmailSender = messages.stream()
-                .anyMatch(m -> m.getSender() != null && m.getSender().contains("@"));
+        model.addAttribute("resultsListIt", resultsListIt);
+        model.addAttribute("resultsIt", resultsIt);
+        model.addAttribute("functionalFilter", functionalFilter);
+        model.addAttribute("totalObj1", totalObjs1);
 
-        boolean hasHighPriority = messages.stream()
-                .anyMatch(m -> m.getPriority() > 4);
-
-        boolean noMissingReceiver = messages.stream()
-                .noneMatch(m -> m.getReciber() == null || m.getReciber().isBlank());
-
-        model.addAttribute("hasEmailSender", hasEmailSender);
-        model.addAttribute("hasHighPriority", hasHighPriority);
-        model.addAttribute("noMissingReceiver", noMissingReceiver);
-        return "get-any-none-match";
-    }
-
-    // http://localhost:8080/get-max-priority
-    @GetMapping("/get-max-priority")
-    public String getMaxPriority(Model model) {
-        Optional<Message> maxPriority = allMessages().stream()
-                .max(Comparator.comparingInt(Message::getPriority));
-
-        model.addAttribute("maxPriority", maxPriority.orElse(null));
-        return "get-max-priority";
-    }
-
-    // Evita repetir el mismo flatMap en cada endpoint
-    private List<Message> allMessages() {
-        return repository.findAll().stream()
-                .flatMap(o -> o.getMessages().stream())
-                .collect(Collectors.toList());
+        return "result";
     }
 }

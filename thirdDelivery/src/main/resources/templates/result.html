@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+>
+    <head>
+        <meta charset="UTF-8">
+        <title>Trabajo 3</title>
+    </head>
+    <body>
+        <h1>Resultados del trabajo comunicacion de mensajes</h1>
+        <h2>Punto 2: Iterador de lista (Stack de mensajes)</h2>
+        <ul>
+            <li th:text="${item}" th:each="item: ${resultsListIt}"> </li>
+        </ul>
+
+        <h2>Punto 2: Iterador (Deque del historial)</h2>
+        <ul>
+            <li th:text="${item}" th:each="item: ${resultsIt}"> </li>
+        </ul>
+
+        <h2>Punto 3: Programacion funcional con Deque convertido</h2>
+        <ul>
+            <li th:text="${m}" th:each="m: ${functionalFilter}"> </li>
+        </ul>
+
+        <h2>Punto 4 y 5: total del Stack de conteo del objeto M1</h2>
+        <p>El total acumulado en el stack de conteo del mensaje M1 es: <strong th:text="${totalObj1}"></strong></p>
+    </body>
+</html>
